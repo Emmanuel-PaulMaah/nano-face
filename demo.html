@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>nano-face split-screen demo</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 12px;
+        background: #0a0a0a; color: #e8e8e8;
+        font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+      header, footer {
+        display: flex; justify-content: center; padding: 10px;
+      }
+      button {
+        padding: 10px 14px; border-radius: 8px; border: 1px solid #2a2a2a;
+        background: #161616; color: #eee; cursor: pointer;
+      }
+      button:disabled { opacity: .6; cursor: default; }
+
+      .split {
+        width: min(96vw, 1100px);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+      }
+      .pane {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #222;
+        background: #000; /* right pane will stay black; left shows video */
+      }
+      .pane video, .pane canvas {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        object-fit: cover;
+      }
+      .label {
+        position: absolute; left: 10px; top: 10px;
+        padding: 4px 8px; border-radius: 6px;
+        background: rgba(0,0,0,.5); color: #fff; font-size: 12px;
+        border: 1px solid #333;
+      }
+      #stats { opacity: .9; }
+      @media (max-width: 900px) {
+        .split { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <button id="start">start camera</button>
+    </header>
+
+    <main class="split">
+      <!-- LEFT: raw camera -->
+      <section class="pane">
+        <div class="label">camera</div>
+        <video id="cam" playsinline muted></video>
+      </section>
+
+      <!-- RIGHT: black canvas with white points -->
+      <section class="pane">
+        <div class="label">landmarks</div>
+        <canvas id="overlay"></canvas>
+      </section>
+    </main>
+
+    <footer>
+      <pre id="stats"></pre>
+    </footer>
+
+    <script type="module">
+      import { createFaceTracker } from './nano-face.js';
+
+      const btn   = document.getElementById('start');
+      const video = document.getElementById('cam');
+      const cvs   = document.getElementById('overlay');
+      const ctx   = cvs.getContext('2d');
+      const stats = document.getElementById('stats');
+
+      // keep canvas size in sync with the video
+      function syncCanvasSize() {
+        if (!video.videoWidth) return;
+        cvs.width  = video.videoWidth;
+        cvs.height = video.videoHeight;
+      }
+
+      let tracker;
+
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+
+        tracker = await createFaceTracker({
+          video,            // pass the element
+          draw: null,       // we will draw ourselves (white on black)
+          model: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+          onResults: ({ landmarks, box, fps }) => {
+            // ensure canvas matches the video once we have dimensions
+            if (cvs.width !== video.videoWidth) syncCanvasSize();
+
+            // BLACK BACKGROUND
+            ctx.save();
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+            // WHITE LANDMARKS
+            ctx.strokeStyle = '#fff';
+            ctx.fillStyle = '#fff';
+            const w = cvs.width, h = cvs.height;
+            const r = 2; // point radius
+            for (const [x, y] of landmarks) {
+              ctx.beginPath();
+              ctx.arc(x * w, y * h, r, 0, Math.PI * 2);
+              ctx.fill();
+            }
+
+            // optional: draw bounding box in white
+            if (box) {
+              ctx.lineWidth = 1;
+              ctx.strokeStyle = '#fff';
+              ctx.strokeRect(box.x * w, box.y * h, box.w * w, box.h * h);
+            }
+
+            ctx.restore();
+
+            stats.textContent = `fps: ${fps.toFixed(0)}   points: ${landmarks.length}`;
+          }
+        });
+
+        // once the video knows its size, sync the canvas
+        if (video.readyState >= 2) syncCanvasSize();
+        else video.addEventListener('loadedmetadata', syncCanvasSize, { once: true });
+
+        tracker.start();
+      });
+
+      window.addEventListener('beforeunload', () => tracker?.stop());
+    </script>
+  </body>
+</html>
