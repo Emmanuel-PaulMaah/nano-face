@@ -134,11 +134,3 @@ the included `demo.html` shows:
 MIT © 2025 Emmanuel PaulMaah
 
 ````
-
----
-
-## `demo.html` (already built)
-
-you can reuse the split-screen demo we made (`white landmarks on black background`). put it at repo root.
-
----
