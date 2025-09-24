@@ -10,7 +10,7 @@ tiny wrapper around [mediapipe face landmarker](https://developers.google.com/me
 <!-- nano-face: face tracking in 10 lines -->
 <video id="cam" playsinline muted></video>
 <script type="module">
-  import { createFaceTracker } from 'https://YOURNAME.github.io/nano-face/nano-face.js';
+  import { createFaceTracker } from 'https://emmanuel-paulmaah.github.io/nano-face/nano-face.js';
 
   const tracker = await createFaceTracker({
     video: '#cam',
@@ -36,7 +36,7 @@ no protobufs. no graphs. no local model downloads. just:
 clone the repo and open the demo:
 
 ```bash
-git clone https://github.com/YOURNAME/nano-face
+git clone https://github.com/Emmanuel-PaulMaah/nano-face
 cd nano-face
 python -m http.server 5173
 # open http://localhost:5173/demo.html
