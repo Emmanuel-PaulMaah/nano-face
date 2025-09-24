@@ -42,7 +42,7 @@ python -m http.server 5173
 # open http://localhost:5173/demo.html
 ````
 
-or check the live version: [github pages link](https://emmanuel-paulmaah.github.io/nano-face)
+or check the live version: [github pages link](https://emmanuel-paulmaah.github.io/nano-face/demo.html)
 
 ---
 
