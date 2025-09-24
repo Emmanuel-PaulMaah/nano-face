@@ -6,6 +6,23 @@
 tiny wrapper around [mediapipe face landmarker](https://developers.google.com/mediapipe/solutions/vision/face_landmarker)
 → **demo face tracking in javascript with 10 lines**.
 
+```html
+<!-- nano-face: face tracking in 10 lines -->
+<video id="cam" playsinline muted></video>
+<script type="module">
+  import { createFaceTracker } from 'https://YOURNAME.github.io/nano-face/nano-face.js';
+
+  const tracker = await createFaceTracker({
+    video: '#cam',
+    onResults: ({ landmarks }) => console.log(landmarks)
+  });
+
+  tracker.start();
+</script>
+```
+
+---
+
 no protobufs. no graphs. no local model downloads. just:
 
 - 1 import
