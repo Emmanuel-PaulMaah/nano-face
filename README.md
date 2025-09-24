@@ -114,7 +114,7 @@ the included `demo.html` shows:
 
 ## license
 
-MIT © 2025 YOUR NAME
+MIT © 2025 Emmanuel PaulMaah
 
 ````
 
@@ -123,28 +123,5 @@ MIT © 2025 YOUR NAME
 ## `demo.html` (already built)
 
 you can reuse the split-screen demo we made (`white landmarks on black background`). put it at repo root.
-
----
-
-## github setup
-
-1. push the repo:
-
-```bash
-git init
-git remote add origin https://github.com/YOURNAME/nano-face.git
-git add .
-git commit -m "initial commit: nano-face"
-git push -u origin main
-````
-
-2. enable github pages:
-
-   * repo → **Settings** → **Pages**
-   * Source = `Deploy from branch`
-   * Branch = `main` / `/root`
-   * Save
-
-3. open: `https://YOURNAME.github.io/nano-face/demo.html`
 
 ---
