@@ -132,5 +132,3 @@ the included `demo.html` shows:
 ## license
 
 MIT © 2025 Emmanuel PaulMaah
-
-````
